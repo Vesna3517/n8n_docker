@@ -42,6 +42,8 @@ services:
       - N8N_PROTOCOL=https
       - WEBHOOK_URL=https://n8n.spectrumsys.pro/
       - NODE_ENV=production
+      - BRAVE_SEARCH_API_KEY=BSAK-
+      - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
     networks:
       - traefik_network
     volumes:
@@ -52,6 +54,21 @@ services:
       - "traefik.http.routers.n8n.entrypoints=websecure"
       - "traefik.http.routers.n8n.tls.certresolver=myresolver"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+
+  mcp-brave-search:
+    image: ghcr.io/mcp-sh/mcp-brave-search:latest
+    container_name: "mcp-brave-search"
+    restart: always
+    networks:
+      - traefik_network
+    environment:
+      - PORT=3000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-brave-search.rule=Host(`search.spectrumsys.pro`)"
+      - "traefik.http.routers.mcp-brave-search.entrypoints=websecure"
+      - "traefik.http.routers.mcp-brave-search.tls.certresolver=myresolver"
+      - "traefik.http.services.mcp-brave-search.loadbalancer.server.port=3000"
 
 networks:
   traefik_network:
