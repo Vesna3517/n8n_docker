@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  traefik:
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    restart: always
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=testn8n@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    networks:
+      - traefik_network
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Панель управления Traefik
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+      - "./auth:/auth"
+    labels:
+      - "traefik.http.routers.api.rule=Host(`traefik.spectrumsys.pro`)"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=myresolver"
+      - "traefik.http.routers.api.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.usersfile=/auth/.htpasswd"
+
+  n8n:
+    image: n8nio/n8n
+    container_name: "n8n"
+    restart: always
+    environment:
+      - N8N_HOST=n8n.spectrumsys.pro
+      - N8N_PORT=5678
+      - N8N_PROJECTS_MODE_ENABLED=true
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://n8n.spectrumsys.pro/
+      - NODE_ENV=production
+    networks:
+      - traefik_network
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.spectrumsys.pro`)"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls.certresolver=myresolver"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+
+networks:
+  traefik_network:
+    driver: bridge
