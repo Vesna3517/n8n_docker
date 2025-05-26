@@ -1,0 +1,18 @@
+# Environment files
+*.env
+
+# Data directories
+postgres_data/
+redis_data/
+n8n_data/
+
+# Logs
+*.log
+
+# SSL certificates
+letsencrypt/
+auth/
+
+# IDE files
+.vscode/
+.idea/ 

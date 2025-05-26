@@ -36,4 +36,4 @@ services:
 
 networks:
   traefik_network:
-    driver: bridge
+    driver: bridge 

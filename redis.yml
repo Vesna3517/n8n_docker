@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: "n8n-redis"
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - ./redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - redis_network
+
+networks:
+  redis_network:
+    driver: bridge 

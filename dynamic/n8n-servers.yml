@@ -1,0 +1,28 @@
+http:
+  services:
+    n8n:
+      loadBalancer:
+        sticky:
+          cookie:
+            name: n8n_session
+            secure: true
+            httpOnly: true
+            sameSite: strict
+        healthCheck:
+          path: /healthz
+          interval: 30s
+          timeout: 10s
+          retries: 3
+        servers:
+          - url: "http://server1-ip:5678"
+          - url: "http://server2-ip:5678"
+          # Добавьте другие серверы по необходимости
+
+  routers:
+    n8n:
+      rule: "Host(`n8n.spectrumsys.pro`)"
+      service: n8n
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: myresolver 
