@@ -54,6 +54,10 @@ start_services() {
             print_status "Starting Traefik..."
             docker-compose up -d
             ;;
+        "fail2ban")
+            print_status "Starting Fail2ban..."
+            docker-compose up -d fail2ban
+            ;;
         *)
             print_error "Unknown service type: $service_type"
             exit 1
@@ -85,6 +89,10 @@ stop_services() {
         "traefik")
             print_status "Stopping Traefik..."
             docker-compose down
+            ;;
+        "fail2ban")
+            print_status "Stopping Fail2ban..."
+            docker-compose stop fail2ban
             ;;
         *)
             print_error "Unknown service type: $service_type"
@@ -132,6 +140,16 @@ show_status() {
     else
         echo -e "N8N: ${RED}Stopped${NC}"
     fi
+
+    # Check Fail2ban
+    if check_service "fail2ban"; then
+        echo -e "Fail2ban: ${GREEN}Running${NC}"
+        # Show banned IPs if fail2ban is running
+        echo "Banned IPs:"
+        docker exec fail2ban fail2ban-client status sshd | grep "Banned IP list" -A 10
+    else
+        echo -e "Fail2ban: ${RED}Stopped${NC}"
+    fi
 }
 
 # Function to show logs
@@ -151,6 +169,9 @@ show_logs() {
             ;;
         "traefik")
             docker-compose logs -f
+            ;;
+        "fail2ban")
+            docker-compose logs -f fail2ban
             ;;
         *)
             print_error "Unknown service type: $service_type"
@@ -233,7 +254,7 @@ case "$1" in
         ;;
     *)
         echo "Usage: $0 {start|stop|restart|status|logs|backup|restore} [service_type]"
-        echo "Service types: all, db, n8n, traefik"
+        echo "Service types: all, db, n8n, traefik, fail2ban"
         exit 1
         ;;
 esac 
