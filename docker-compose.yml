@@ -51,6 +51,8 @@ services:
       - F2B_DB_PURGE_AGE=30d
     networks:
       - traefik_network
+    labels:
+      - "traefik.enable=false"
 
 networks:
   traefik_network:
