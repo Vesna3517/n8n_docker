@@ -16,8 +16,9 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - redis_network
+      - traefik_network
 
 networks:
-  redis_network:
-    driver: bridge 
+  traefik_network:
+    name: traefik_network
+    external: true 

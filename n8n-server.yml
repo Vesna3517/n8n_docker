@@ -19,11 +19,9 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - n8n_network
       - traefik_network
 
 networks:
-  n8n_network:
-    driver: bridge
   traefik_network:
+    name: traefik_network
     external: true 

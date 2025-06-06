@@ -5,8 +5,10 @@ services:
     image: postgres:15-alpine
     container_name: "n8n-postgres"
     restart: always
-    env_file:
-      - ./postgres.env
+    environment:
+      - POSTGRES_USER=n8n
+      - POSTGRES_PASSWORD=n8n_password
+      - POSTGRES_DB=n8n
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     ports:
@@ -17,8 +19,9 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - postgres_network
+      - traefik_network
 
 networks:
-  postgres_network:
-    driver: bridge 
+  traefik_network:
+    name: traefik_network
+    external: true 
