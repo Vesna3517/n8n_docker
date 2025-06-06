@@ -86,8 +86,8 @@ Use the `manage.sh` script to control the services:
 
 ### Accessing Services
 
-- N8N: https://n8n.spectrumsys.pro
-- Traefik Dashboard: https://traefik.spectrumsys.pro
+- N8N: https://n8n.example.com
+- Traefik Dashboard: https://traefik.example.com
 - PostgreSQL: localhost:5432
 - Redis: localhost:6379
 
