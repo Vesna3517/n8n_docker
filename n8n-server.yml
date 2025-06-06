@@ -10,7 +10,8 @@ services:
     ports:
       - "5678:5678"
     volumes:
-      - ./n8n_data:/home/node/.n8n
+      - ./n8n_data:/home/node/.n8n:rw
+    user: "1000:1000"  # Use the host user ID
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5678/healthz"]
       interval: 30s
@@ -19,7 +20,10 @@ services:
       start_period: 40s
     networks:
       - n8n_network
+      - traefik_network
 
 networks:
   n8n_network:
-    driver: bridge 
+    driver: bridge
+  traefik_network:
+    external: true 
