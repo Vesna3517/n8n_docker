@@ -5,16 +5,18 @@ services:
     image: "traefik:v2.10"
     container_name: "traefik"
     restart: always
+    env_file:
+      - traefik.env
     command:
-      - "--api.dashboard=true"
-      - "--providers.docker=true"
-      - "--providers.file.directory=/etc/traefik/dynamic"
-      - "--providers.file.watch=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=testn8n@gmail.com"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--api.dashboard=${TRAEFIK_DASHBOARD}"
+      - "--providers.docker=${TRAEFIK_DOCKER}"
+      - "--providers.file.directory=${TRAEFIK_FILE_DIRECTORY}"
+      - "--providers.file.watch=${TRAEFIK_FILE_WATCH}"
+      - "--entrypoints.web.address=${TRAEFIK_WEB_ADDRESS}"
+      - "--entrypoints.websecure.address=${TRAEFIK_WEBSECURE_ADDRESS}"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=${TRAEFIK_ACME_TLSCHALLENGE}"
+      - "--certificatesresolvers.myresolver.acme.email=${TRAEFIK_EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=${TRAEFIK_ACME_STORAGE}"
     networks:
       - traefik_network
     ports:
@@ -27,7 +29,7 @@ services:
       - "./auth:/auth"
       - "./dynamic:/etc/traefik/dynamic"
     labels:
-      - "traefik.http.routers.api.rule=Host(`traefik.spectrumsys.pro`)"
+      - "traefik.http.routers.api.rule=Host(`traefik.${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.api.service=api@internal"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls.certresolver=myresolver"
