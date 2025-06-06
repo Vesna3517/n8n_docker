@@ -5,8 +5,17 @@ services:
     image: "traefik:v2.10"
     container_name: "traefik"
     restart: always
-    env_file:
-      - traefik.env
+    environment:
+      - TRAEFIK_DOMAIN=example.com
+      - TRAEFIK_EMAIL=testn8n@gmail.com
+      - TRAEFIK_DASHBOARD=true
+      - TRAEFIK_DOCKER=true
+      - TRAEFIK_FILE_DIRECTORY=/etc/traefik/dynamic
+      - TRAEFIK_FILE_WATCH=true
+      - TRAEFIK_WEB_ADDRESS=:80
+      - TRAEFIK_WEBSECURE_ADDRESS=:443
+      - TRAEFIK_ACME_TLSCHALLENGE=true
+      - TRAEFIK_ACME_STORAGE=/letsencrypt/acme.json
     command:
       - "--api.dashboard=${TRAEFIK_DASHBOARD}"
       - "--providers.docker=${TRAEFIK_DOCKER}"
